@@ -3,7 +3,7 @@
     <input
         type="number"
         class="input-1"
-        :disabled=disabledRight
+        :disabled=disabled
         v-show="showDropdown === false"
         :value="modelValue"
         @input="updateAmount">
@@ -16,13 +16,9 @@
     <img class="arrowD" v-if="showDropdown === false"  src="@/img/Vector.svg" alt="">
     <img class="cross" v-if="showDropdown" @click="toggleShowForm"  src="@/img/Vectorr.svg" alt="">
 
-    <ul class="dropdown-list" v-show="showDropdown" >
-      <li @click="emitSelect_HideDropdown(crypto)" class="dropdown-list-item" v-for="crypto in cryptos">
-        <img class="dropdown-list-item-icon" :src=crypto.image>
-        <div class="dropdown-list-item-name">{{crypto.ticker.toUpperCase()}}</div>
-        <span class="dropdown-list-item-description">{{crypto.name}}</span>ㅤ
-      </li>
-    </ul>
+    <Dropdown v-show="showDropdown"
+              :cryptos="cryptos"
+              @updateSelect="updateSelect"/>
 
     <input
         class="dropdown-input--hidden"
@@ -35,10 +31,11 @@
 </template>
 
 <script>
+import Dropdown from "@/components/Dropdown";
 
 export default {
   components: {
-
+    Dropdown
   },
   data() {
     return {
@@ -59,14 +56,14 @@ export default {
     {
       this.$emit('update:search', event.target.value)
     },
-    emitSelect_HideDropdown(crypto)
-    {
-      this.$emit('updateSelect', crypto);
-      this.showDropdown = false;
-    },
+
     clickOutside(event) {
       this.showDropdown = false;
     },
+    updateSelect(crypto) {
+      this.$emit('updateSelect', crypto);
+      this.showDropdown = false;
+    }
   },
   props: {
     modelValue: [String, Number],
@@ -74,7 +71,7 @@ export default {
     cryptos: [Array],
     icon: [String],
     ticker: [String],
-    disabledRight: [Boolean],
+    disabled: [Boolean],
   },
   watch: {
     showDropdown(newValue) {
@@ -86,50 +83,7 @@ export default {
 </script>
 
 <style scoped>
-.dropdown-list-item {
-  display: flex;
-  gap: 12px;
-  margin: 0;
-  padding: 0;
-  padding-top: 13px;
-  padding-left: 17px;
-  padding-bottom: 11px;
 
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 23px;
-
-  cursor: pointer;
-}
-.dropdown-list-item:first-child {
-
-  padding-top: 14px;
-
-}
-.dropdown-list-item:last-child {
-
-  padding-bottom: 10px;
-
-}
-.dropdown-list-item:hover {
-  background: #EAF1F7;
-}
-
-.dropdown-list-item-icon
-{
-  width: 20px;
-  height: 20px;
-}
-.dropdown-list-item-description
-{
-
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 23px;
-  color: #80A2B6;
-
-  left: 97px;
-}
 
 
 
@@ -266,27 +220,7 @@ export default {
 
   color: #80A2B6;
 }
-.dropdown-list
-{
 
-  position: absolute;
-  left: -1px;
-  top: 49px;
-  list-style-type: none;
-
-
-  height: 142px;
-  width: 440px;
-  border-radius: 5px;
-  overflow-y: scroll;
-
-  background: #F6F7F8;
-  border: 1px solid #C1D9E6;
-  border-top: 1px solid #E3EBEF;
-  border-radius: 0 0 5px 5px;
-
-  z-index: 1;
-}
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
@@ -315,19 +249,5 @@ input[type="number"]:focus {
 :focus:-ms-input-placeholder {
   color: transparent
 }
-::-webkit-scrollbar {
-  width: 7px;
-}
-.dropdown-list {
-  scrollbar-width: thin;
-  scrollbar-color: var(--thumbBG) var(--scrollbarBG);
-}
-::-webkit-scrollbar-track {
-  background: var(--scrollbarBG);
-}
-::-webkit-scrollbar-thumb {
-  background-color: var(--thumbBG) ;
-  border-radius: 6px;
-  border: 1px solid var(--scrollbarBG);
-}
+
 </style>

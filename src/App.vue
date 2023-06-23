@@ -18,7 +18,7 @@
 
         <InputSelect
             @updateSelect="updateRight"
-            :disabledRight="disabledRight"
+            :disabled="true"
             :icon="iconRight"
             :ticker="tickerRight"
             :cryptos="cryptosRight"
@@ -54,7 +54,6 @@ export default {
       tickerLeft: 'BTC',
       iconRight: 'https://content-api.changenow.io/uploads/eth_f4ebb54ec0.svg',
       tickerRight: 'ETH',
-      disabledRight: true,
     }
   },
   components: {
@@ -120,12 +119,12 @@ export default {
   computed: {
     cryptosLeft() {
       return this.cryptosLeft.filter(crypto =>
-          (crypto.ticker.toLowerCase().includes(this.valSearchLeft.toLowerCase()) || crypto.name.toLowerCase().includes(this.valSearchLeft.toLowerCase()))
+          (crypto.ticker.toLowerCase().startsWith(this.valSearchLeft.toLowerCase()) || crypto.name.toLowerCase().startsWith(this.valSearchLeft.toLowerCase()))
       );
     },
     cryptosRight() {
       return this.cryptosRight.filter(crypto =>
-          (crypto.ticker.toLowerCase().includes(this.valSearchRight.toLowerCase()) || crypto.name.toLowerCase().includes(this.valSearchRight.toLowerCase()))
+          (crypto.ticker.toLowerCase().startsWith(this.valSearchRight.toLowerCase()) || crypto.name.toLowerCase().startsWith(this.valSearchRight.toLowerCase()))
       );
     },
   },
