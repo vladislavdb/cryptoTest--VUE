@@ -86,4 +86,22 @@ export default {
   transform: translateY(-5px);
   opacity: 0;
 }
+@media (max-width: 1024px){
+  .button__error--hidden::before {
+    width: 110px;
+    left: -120px;
+  }
+}
+@media (max-width: 768px){
+  .myBut {
+    width: 328px;
+  }
+  .button__error--hidden::before {
+    left: -55px;
+    top: -228px;
+  }
+  .button__error--hidden {
+    left: 75px;
+  }
+}
 </style>

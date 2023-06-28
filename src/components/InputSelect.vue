@@ -1,20 +1,22 @@
 <template>
-  <div v-click-outside='clickOutside' class="input-select" :class="[showDropdown ? inputActive : '']" >
+  <div v-click-outside='clickOutside' class="input-select" :class="[showDropdown ? inputActive : '']">
     <input
+        size="5"
         type="number"
         class="input-1"
         :disabled=disabled
         v-show="showDropdown === false"
         :value="modelValue"
-        @input="updateAmount">
+        @input.stop="updateAmount"
+    >
 
-    <div class="select-1" v-show="showDropdown === false" @click="toggleShowForm" >
+    <div class="select-1" v-show="showDropdown === false" @click="toggleShowForm">
       <img class="select1-icon" :src="this.icon">
       <div class="select-1-text">{{ this.ticker }}</div>
     </div>
 
-    <img class="arrowD" v-if="showDropdown === false"  src="@/img/Vector.svg" alt="">
-    <img class="cross" v-if="showDropdown" @click="toggleShowForm"  src="@/img/Vectorr.svg" alt="">
+    <img class="arrowD" v-if="showDropdown === false" src="@/img/Vector.svg" alt="">
+    <img class="cross" v-if="showDropdown" @click="toggleShowForm" src="@/img/Vectorr.svg" alt="">
 
     <Dropdown v-show="showDropdown"
               :cryptos="cryptos"
@@ -44,16 +46,18 @@ export default {
     }
   },
   methods: {
-    toggleShowForm()
-    {
+    toggleShowForm() {
       this.showDropdown = !this.showDropdown;
     },
-    updateAmount(event)
-    {
-      this.$emit('update:modelValue', event.target.value)
+    updateAmount(event) {
+      if (event.data === '+' || event.data === '-' || event.data === 'e') {
+        this.$emit('update:modelValue', this.modelValue)
+        event.target.value = this.modelValue;
+      } else {
+        this.$emit('update:modelValue', event.target.value);
+      }
     },
-    updateSearch(event)
-    {
+    updateSearch(event) {
       this.$emit('update:search', event.target.value)
     },
 
@@ -85,13 +89,6 @@ export default {
 <style scoped>
 
 
-
-
-
-
-
-
-
 .input-select {
 
   font-weight: 400;
@@ -109,17 +106,17 @@ export default {
   border: 1px solid #E3EBEF;
   border-radius: 5px;
 }
-.input-select--active
-{
+
+.input-select--active {
   border: 1px solid #C1D9E6;
   border-radius: 5px 5px 0 0;
   border-bottom: none;
 }
-.input-1
-{
+
+.input-1 {
   align-self: center;
-  flex-basis: 230px;
-  flex-grow: 1;
+  min-width: 50px;
+  flex-grow: 5;
   height: 50px;
   border: none;
   border-right: 2px solid #E3EBEF;
@@ -134,11 +131,10 @@ export default {
 }
 
 
-.select-1
-{
+.select-1 {
   padding-left: 29px;
   height: 50px;
-  flex-basis: auto;
+  flex-grow: 1;
   border-radius: 5px;
   display: flex;
   justify-content: center;
@@ -148,8 +144,8 @@ export default {
 
   cursor: pointer;
 }
-.select-1::after
-{
+
+.select-1::after {
   position: absolute;
   content: "";
   border-top: 10px solid #F6F7F8;
@@ -158,8 +154,8 @@ export default {
   top: 38px;
   pointer-events: none;
 }
-.select-1::before
-{
+
+.select-1::before {
   position: absolute;
   content: "";
   border-top: 10px solid #F6F7F8;
@@ -168,20 +164,19 @@ export default {
   top: 0px;
   pointer-events: none;
 }
-.select1-icon
-{
+
+.select1-icon {
   width: 20px;
   height: 20px;
 
 }
-.select-1-text
-{
+
+.select-1-text {
   margin-top: 2px;
   margin-right: 54px;
 }
 
-.arrowD
-{
+.arrowD {
 
   position: absolute;
 
@@ -190,8 +185,8 @@ export default {
 
   pointer-events: none;
 }
-.cross
-{
+
+.cross {
   position: absolute;
   right: 11px;
   top: 21px;
@@ -200,8 +195,8 @@ export default {
 
   z-index: 1;
 }
-.dropdown-input--hidden
-{
+
+.dropdown-input--hidden {
   font-weight: 400;
   font-size: 16px;
   line-height: 23px;
@@ -215,10 +210,23 @@ export default {
   background: none;
   padding-left: 16px;
 }
-.dropdown-input--hidden::placeholder
-{
+
+.dropdown-input--hidden::placeholder {
 
   color: #80A2B6;
+}
+
+@media (max-width: 1024px){
+  .input-select {
+    width: 328px;
+  }
+  .select-1::after, .select-1::before{
+    width: 200px;
+    left: 115px;
+  }
+  .input-1 {
+
+  }
 }
 
 input::-webkit-outer-spin-button,

@@ -1,16 +1,16 @@
 <template>
-  <img class="loading" src="@/img/ZKZx.gif">
+  <img class='loading' src='@/img/ZKZx.gif'>
 </template>
 
 <script>
 export default {
- name: 'my-loading'
+  name: 'my-loading',
 }
 </script>
 
+
 <style scoped>
-.loading
-{
+.loading {
   width: 24px;
   height: 24px;
   cursor: pointer;

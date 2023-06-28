@@ -15,9 +15,8 @@ export default {
   font-size: 16px;
   line-height: 23px;
   font-family: 'Vollkorn', serif;
-
+  flex-grow: 1;
   padding-left: 16px;
-  width: 723px;
   height: 50px;
   background: #F6F7F8;
   border: 1px solid #E3EBEF;
@@ -26,5 +25,10 @@ export default {
 .input_address:focus
 {
   outline: none;
+}
+@media (max-width: 768px){
+  .input_address {
+    width: 328px;
+  }
 }
 </style>

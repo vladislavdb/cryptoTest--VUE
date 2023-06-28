@@ -13,12 +13,12 @@
             v-model="valAmountLeft"
             v-model:search="valSearchLeft"/>
 
-                <my-swap @click="swap" v-if="!loading"/>
-                <my-loading v-if="loading"/>
+        <my-swap @click="swap" v-show="!loading"/>
+        <my-loading v-show="loading"/>
 
         <InputSelect
             @updateSelect="updateRight"
-            :disabled="true"
+            disabled
             :icon="iconRight"
             :ticker="tickerRight"
             :cryptos="cryptosRight"
@@ -38,6 +38,7 @@
 
 <script>
 import InputSelect from "@/components/InputSelect";
+import _ from "lodash";
 
 export default {
   data() {
@@ -54,6 +55,7 @@ export default {
       tickerLeft: 'BTC',
       iconRight: 'https://content-api.changenow.io/uploads/eth_f4ebb54ec0.svg',
       tickerRight: 'ETH',
+      minAmount: '',
     }
   },
   components: {
@@ -82,24 +84,25 @@ export default {
           return;
         }
         this.valAmountLeft = data.minAmount;
+        this.minAmount = data.minAmount;
       } catch {
         alert('Ошибка 1')
-      }
-      finally {
+      } finally {
         this.loading = false;
       }
     },
     updateLeft(crypto) {
-        this.iconLeft = crypto.image;
-        this.tickerLeft = crypto.ticker.toUpperCase();
-        this.fetchMinimalAmount();
+      this.iconLeft = crypto.image;
+      this.tickerLeft = crypto.ticker.toUpperCase();
+      this.fetchMinimalAmount();
     },
     updateRight(crypto) {
       this.iconRight = crypto.image;
       this.tickerRight = crypto.ticker.toUpperCase();
       this.fetchMinimalAmount();
     },
-    swap() {
+
+    swap: (function() {
       let temp = this.iconLeft;
       this.iconLeft = this.iconRight;
       this.iconRight = temp;
@@ -109,7 +112,7 @@ export default {
       this.tickerRight = temp;
 
       this.fetchMinimalAmount();
-    },
+    })
 
   },
   mounted() {
@@ -129,9 +132,8 @@ export default {
     },
   },
   watch: {
-   async valAmountLeft(newValue) {
-      if (newValue.length == 0)
-      {
+    valAmountLeft: _.debounce(async function(newValue){
+      if (newValue.length == 0) {
         this.valAmountRight = '';
         return;
       }
@@ -140,28 +142,26 @@ export default {
       console.log("Minimal = ", minurl);
       console.log("Estimated = ", url);
 
-        try {
-          this.loading = true;
-          const responseMinmal = await fetch(minurl);
-          const dataMinmal = await responseMinmal.json();
-          const response = await fetch(url);
-          const data = await response.json();
-          this.valAmountRight = data.estimatedAmount;
+      try {
+        this.loading = true;
 
-          if (newValue < dataMinmal.minAmount) {
-            this.valAmountRight = '';
-            this.error = true;
-          }
-          if (newValue >= dataMinmal.minAmount) {
-            this.error = false;
-          }
-        } catch (e){
-          console.log(e);
+        const response = await fetch(url);
+        const data = await response.json();
+        this.valAmountRight = data.estimatedAmount;
+
+        if (newValue < this.minAmount) {
+          this.valAmountRight = '';
+          this.error = true;
         }
-        finally {
-          this.loading = false;
+        if (newValue >= this.minAmount) {
+          this.error = false;
         }
-    },
+      } catch (e) {
+        console.log(e);
+      } finally {
+        this.loading = false;
+      }
+    }, 500),
   }
 }
 
@@ -173,15 +173,19 @@ export default {
   padding: 0;
   box-sizing: border-box;
 }
+
 html {
   --scrollbarBG: #CFD8DC;
   --thumbBG: #90A4AE;
 }
-.main-content
-{
+
+
+
+.main-content {
   width: 960px;
   margin: 0 auto;
-
+  box-sizing: content-box;
+  padding: 0 16px;
 
   font-family: 'Vollkorn', serif;
   font-size: 20px;
@@ -189,8 +193,8 @@ html {
   color: #282828;
   background-color: #FFFFFF;
 }
-.crypto-exchange h1
-{
+
+.crypto-exchange h1 {
 
   margin-bottom: 16px;
   padding-top: 220px;
@@ -199,38 +203,63 @@ html {
   line-height: 60px;
   font-weight: 300;
 }
-.crypto-exchange p
-{
+
+.crypto-exchange p {
   margin-bottom: 60px;
   padding: 0;
 
   font-size: 20px;
   line-height: 20px;
 }
-.exchange-1row
-{
+
+.exchange-1row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 32px;
+  gap: 16px;
 }
 
 
-
-.exchange-2row
-{
+.exchange-2row {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 32px;
 }
-.crypto-exchange label
-{
+
+.crypto-exchange label {
   display: block;
   margin-bottom: 8px;
   font-size: 16px;
   line-height: 23px;
 }
-
+@media (max-width: 1024px){
+  .main-content {
+    width: 712px;
+    gap: 16px;
+  }
+}
+@media (max-width: 768px){
+  .main-content {
+    width: 328px;
+  }
+  .crypto-exchange h1{
+    padding-top: 64px;
+  }
+  .exchange-1row{
+    flex-direction: column;
+  }
+  .exchange-2row{
+    flex-direction: column;
+  }
+  .crypto-exchange h1 {
+    font-size: 40px;
+  }
+  .exchange-2row {
+    gap: 16px;
+  }
+}
 /** { outline: 2px dotted red; }*/
 /** * { outline: 2px dotted green; }*/
 /** * * { outline: 2px dotted orange; }*/
